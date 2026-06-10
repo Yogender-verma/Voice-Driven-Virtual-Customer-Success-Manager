@@ -27,6 +27,9 @@ public class OmnidimService {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private VoiceModelRegistryService voiceModelRegistryService;
+
     public Map<String, Object> processVoiceCommand(String transcript) {
         log.info("Processing: " + transcript);
         String lower = transcript.toLowerCase();
@@ -46,7 +49,14 @@ public class OmnidimService {
         cmd.setProcessed(true);
         voiceCommandRepository.save(cmd);
 
-        return Map.of("intent", intent, "transcript", transcript, "response", response, "success", true);
+        Map<String, Object> result = new java.util.HashMap<>();
+        result.put("intent", intent);
+        result.put("transcript", transcript);
+        result.put("response", response);
+        result.put("success", true);
+        voiceModelRegistryService.getActiveModel()
+                .ifPresent(model -> result.put("voiceModelKey", model.modelKey()));
+        return result;
     }
 
     private String detectIntent(String t) {

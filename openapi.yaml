@@ -1,0 +1,48 @@
+openapi: 3.0.3
+info:
+  title: Voice-Driven Virtual Customer Success Manager API
+  version: 1.0.0
+paths:
+  /voice-model:
+    post:
+      summary: Upload a custom voice model archive
+      description: Accepts a proprietary voice model as a .zip archive and stores it in the configured S3 bucket for inference pipeline use.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Zip archive containing voice model files.
+      responses:
+        "201":
+          description: Voice model uploaded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoiceModelUploadResponse"
+        "400":
+          description: Missing, empty, or unsupported upload file.
+        "503":
+          description: S3 bucket configuration is missing.
+components:
+  schemas:
+    VoiceModelUploadResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        modelKey:
+          type: string
+          nullable: true
+        bucket:
+          type: string
+          nullable: true
