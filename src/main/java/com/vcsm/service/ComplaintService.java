@@ -5,6 +5,8 @@ import com.vcsm.model.User;
 import com.vcsm.repository.ComplaintRepository;
 import com.vcsm.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -91,6 +93,15 @@ public class ComplaintService {
         }
         String username = currentUsername();
         return complaintRepository.findByResidentUsernameOrderByCreatedAtDesc(username);
+    }
+
+    // Pagination method
+    public Page<Complaint> getPaginatedComplaints(Pageable pageable) {
+        if (isAdmin()) {
+            return complaintRepository.findAll(pageable);
+        }
+        String username = currentUsername();
+        return complaintRepository.findByResidentUsername(username, pageable);
     }
 
     public Optional<Complaint> getComplaintById(Long id) {

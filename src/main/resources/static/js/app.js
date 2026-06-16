@@ -47,6 +47,13 @@ function startVoice() {
     recognition.start();
 }
 
+function changePageSize(size) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('size', size);
+    url.searchParams.set('page', 0);
+    window.location.href = url.toString();
+}
+
 async function sendCommand() {
     const input = document.getElementById('voiceInput');
     const transcript = input.value.trim();

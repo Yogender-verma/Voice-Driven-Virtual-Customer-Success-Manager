@@ -7,6 +7,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+Page<Complaint> findAll(Pageable pageable);
+Page<Complaint> findByResidentUsername(String username, Pageable pageable);
+
 @Repository
 public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
 
@@ -37,4 +43,7 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
 
     @Query("SELECT c.priority, COUNT(c) FROM Complaint c GROUP BY c.priority")
     List<Object[]> countByPriority();
+
+    Page<Complaint> findAll(Pageable pageable);
+Page<Complaint> findByResidentUsername(String username, Pageable pageable);
 }
