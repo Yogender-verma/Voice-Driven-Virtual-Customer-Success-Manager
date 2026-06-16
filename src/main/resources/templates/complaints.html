@@ -66,10 +66,18 @@
 <div class="container mt-4">
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
         <h4 class="fw-bold mb-0"><i class="fas fa-exclamation-circle text-purple me-2"></i>Complaint Management</h4>
-        <button class="btn btn-purple w-100 w-sm-auto" data-bs-toggle="modal" data-bs-target="#fileComplaintModal">
-            <span class="btn-spinner"></span>
-            <span class="btn-text"><i class="fas fa-plus me-1"></i>New Complaint</span>
-        </button>
+        <div class="d-flex gap-2">
+            <button class="btn btn-success btn-sm" onclick="exportCSV()">
+                <i class="fas fa-file-csv me-1"></i> CSV
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="exportPDF()">
+                <i class="fas fa-file-pdf me-1"></i> PDF
+            </button>
+            <button class="btn btn-purple w-100 w-sm-auto" data-bs-toggle="modal" data-bs-target="#fileComplaintModal">
+                <span class="btn-spinner"></span>
+                <span class="btn-text"><i class="fas fa-plus me-1"></i>New Complaint</span>
+            </button>
+        </div>
     </div>
 
     <!-- Stats Row - 2 columns on mobile, 4 on desktop -->
@@ -282,6 +290,21 @@
             }
         }, 1000);
     });
+
+    // Export Functions
+    function exportCSV() {
+        if (typeof toast !== 'undefined') {
+            toast.info('Downloading CSV...', '📥 Export');
+        }
+        window.location.href = '/api/export/complaints/csv';
+    }
+
+    function exportPDF() {
+        if (typeof toast !== 'undefined') {
+            toast.info('Downloading PDF...', '📥 Export');
+        }
+        window.location.href = '/api/export/complaints/pdf';
+    }
 
     // Submit complaint with toast
     function submitComplaint() {
