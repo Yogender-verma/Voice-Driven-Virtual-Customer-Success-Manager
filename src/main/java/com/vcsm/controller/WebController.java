@@ -6,7 +6,10 @@ import com.vcsm.service.EventService;
 import com.vcsm.service.OmnidimService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,27 +37,15 @@ public class WebController {
         return "landing";
     }
 
-    @GetMapping("/complaints")
-public String complaintsPage(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size,
-        Model model) {
-    
-    Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-    Page<Complaint> complaintPage = complaintService.getPaginatedComplaints(pageable);
-    
-    model.addAttribute("complaints", complaintPage.getContent());
-    model.addAttribute("page", complaintPage);
-    model.addAttribute("stats", complaintService.getComplaintStats());
-    
-    return "complaints";
-}
+    @GetMapping("/onboarding")
+    public String onboarding() {
+        return "onboarding";
+    }
 
     @GetMapping("/")
     public String dashboard(Model model) {
 
         Map<String, Long> stats = complaintService.getComplaintStats();
-
 
         if (stats == null) {
             stats = new HashMap<>();
@@ -97,18 +88,18 @@ public String complaintsPage(
     }
 
     @GetMapping("/complaints")
-    public String complaints(Model model) {
-
-        model.addAttribute("complaints",
-                complaintService.getAllComplaints() != null
-                        ? complaintService.getAllComplaints()
-                        : new ArrayList<>());
-
-        model.addAttribute("stats",
-                complaintService.getComplaintStats() != null
-                        ? complaintService.getComplaintStats()
-                        : new HashMap<>());
-
+    public String complaintsPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Complaint> complaintPage = complaintService.getPaginatedComplaints(pageable);
+        
+        model.addAttribute("complaints", complaintPage.getContent());
+        model.addAttribute("page", complaintPage);
+        model.addAttribute("stats", complaintService.getComplaintStats());
+        
         return "complaints";
     }
 
@@ -152,5 +143,15 @@ public String complaintsPage(
                         : 0);
 
         return "analytics";
+    }
+
+    @GetMapping("/voice-analytics")
+    public String voiceAnalytics() {
+        return "voice-analytics";
+    }
+
+    @GetMapping("/profile")
+    public String profile() {
+        return "profile";
     }
 }
