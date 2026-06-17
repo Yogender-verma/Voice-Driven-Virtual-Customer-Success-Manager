@@ -101,8 +101,25 @@ public class OmnidimService {
         else if (t.contains("security")) cat = "security";
         else if (t.contains("parking")) cat = "parking";
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth != null ? auth.getName() : null;
+        User user = null;
+        if (email != null) {
+            user = userRepository.findByEmail(email).orElse(null);
+        }
+        if (user == null) {
+            user = userRepository.findById(1L).orElse(null); // Fallback to 1L
+        }
+
         Complaint complaint = new Complaint();
-        complaint.setResidentName("Voice Command");
+        if (user != null) {
+            complaint.setResidentName(user.getName());
+            complaint.setResidentUsername(user.getEmail());
+            complaint.setContactEmail(user.getEmail());
+            complaint.setUser(user);
+        } else {
+            complaint.setResidentName("Voice Command");
+        }
         complaint.setDescription(t);
         complaint.setCategory(Complaint.ComplaintCategory.valueOf(cat.toUpperCase()));
         complaintService.fileComplaint(complaint);

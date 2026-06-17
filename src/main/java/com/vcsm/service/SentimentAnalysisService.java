@@ -50,6 +50,13 @@ public class SentimentAnalysisService {
             // Create HIGH priority complaint
             Complaint complaint = new Complaint();
             complaint.setUser(user);
+            if (user != null) {
+                complaint.setResidentName(user.getName());
+                complaint.setResidentUsername(user.getEmail());
+                complaint.setContactEmail(user.getEmail());
+            } else {
+                complaint.setResidentName("System Auto-Escalation");
+            }
             complaint.setDescription("[AUTO-ESCALATED] " + transcribedText);
             complaint.setCategory(Complaint.ComplaintCategory.OTHER);
             complaint.setStatus(Complaint.ComplaintStatus.OPEN);
