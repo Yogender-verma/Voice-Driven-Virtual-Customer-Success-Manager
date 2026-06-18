@@ -128,13 +128,13 @@ public class ComplaintController {
         return ResponseEntity.ok(complaintService.getComplaintsByCategory());
     }
 
-<<<<<<< HEAD
+
     @Operation(summary = "Get priority statistics")
     @GetMapping("/stats/priority")
     public ResponseEntity<Map<String, Long>> getPriorityStats() {
         Map<String, Long> stats = complaintService.getPriorityStats();
         return ResponseEntity.ok(stats);
-=======
+
     @Operation(summary = "Get complaints by priority")
     @GetMapping("/priority/{priority}")
     public ResponseEntity<List<Complaint>> getByPriority(@PathVariable String priority) {
@@ -145,8 +145,7 @@ public class ComplaintController {
 
     @Operation(summary = "Update complaint priority manually")
     @PutMapping("/{id}/priority")
-    public ResponseEntity<Complaint> updatePriority(
-            @PathVariable Long id,
+    public ResponseEntity<Complaint> updatePriority(  @PathVariable Long id,
             @RequestParam String priority) {
         return ResponseEntity.ok(
                 complaintService.updatePriority(id, priority.toUpperCase())
@@ -157,7 +156,7 @@ public class ComplaintController {
     @GetMapping("/stats/priority")
     public ResponseEntity<Map<String, Long>> getPriorityStats() {
         return ResponseEntity.ok(complaintService.getPriorityStats());
->>>>>>> upstream/main
+
     }
 
     @ExceptionHandler(IllegalStateException.class)
