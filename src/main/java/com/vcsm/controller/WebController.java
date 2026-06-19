@@ -1,14 +1,21 @@
 package com.vcsm.controller;
 
+import com.vcsm.model.Complaint;
 import com.vcsm.service.ComplaintService;
 import com.vcsm.service.EventService;
 import com.vcsm.service.OmnidimService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,19 +39,39 @@ public class WebController {
     }
 
     @GetMapping("/chatbot")
-public String chatbot() {
-    return "chatbot-ui";
-}
+    public String chatbot() {
+        return "chatbot-ui";
+    }
 
-@GetMapping("/profile")
-public String profile() {
-    return "profile";
-}
+    @GetMapping("/voice-templates")
+    public String voiceTemplates() {
+        return "voice-templates";
+    }
+
+    @GetMapping("/profile")
+    public String profile() {
+        return "profile";
+    }
+
+    @GetMapping("/onboarding")
+    public String onboarding() {
+        return "onboarding";
+    }
+
+    @GetMapping("/voice-analytics")
+    public String voiceAnalytics() {
+        return "voice-analytics";
+    }
+
+    @GetMapping("/audit-logs")
+    public String auditLogs() {
+        return "audit-logs";
+    }
+
     @GetMapping("/")
     public String dashboard(Model model) {
 
         Map<String, Long> stats = complaintService.getComplaintStats();
-
 
         if (stats == null) {
             stats = new HashMap<>();
@@ -87,17 +114,39 @@ public String profile() {
     }
 
     @GetMapping("/complaints")
-    public String complaints(Model model) {
+    public String complaintsPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String priority,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            Model model) {
 
-        model.addAttribute("complaints",
-                complaintService.getAllComplaints() != null
-                        ? complaintService.getAllComplaints()
-                        : new ArrayList<>());
+        Sort sort = Sort.by("createdAt").descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
 
-        model.addAttribute("stats",
-                complaintService.getComplaintStats() != null
-                        ? complaintService.getComplaintStats()
-                        : new HashMap<>());
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+        try {
+            if (startDate != null && !startDate.isEmpty()) {
+                start = LocalDateTime.parse(startDate + "T00:00:00");
+            }
+            if (endDate != null && !endDate.isEmpty()) {
+                end = LocalDateTime.parse(endDate + "T23:59:59");
+            }
+        } catch (Exception e) {
+            // Ignore date parsing errors
+        }
+
+        Page<Complaint> complaintPage = complaintService.searchComplaints(
+            keyword, status, category, priority, start, end, pageable);
+
+        model.addAttribute("complaints", complaintPage.getContent());
+        model.addAttribute("page", complaintPage);
+        model.addAttribute("stats", complaintService.getComplaintStats());
 
         return "complaints";
     }
