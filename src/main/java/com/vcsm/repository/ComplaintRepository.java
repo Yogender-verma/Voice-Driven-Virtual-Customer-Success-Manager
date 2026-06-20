@@ -13,6 +13,9 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import org.springframework.data.jpa.domain.Specification;
+Page<Complaint> findAll(Specification<Complaint> spec, Pageable pageable);
+
 Page<Complaint> findAll(Pageable pageable);
 Page<Complaint> findByResidentUsername(String username, Pageable pageable);
 
