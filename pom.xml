@@ -39,7 +39,31 @@
     <version>3.12.0</version>
 </dependency>
 
+<!-- Web3j for Ethereum integration -->
+<dependency>
+    <groupId>org.web3j</groupId>
+    <artifactId>core</artifactId>
+    <version>4.9.5</version>
+</dependency>
 
+<!-- QR Code Generation -->
+<dependency>
+    <groupId>com.google.zxing</groupId>
+    <artifactId>core</artifactId>
+    <version>3.5.3</version>
+</dependency>
+<dependency>
+    <groupId>com.google.zxing</groupId>
+    <artifactId>javase</artifactId>
+    <version>3.5.3</version>
+</dependency>
+
+<!-- Bouncy Castle for hashing -->
+<dependency>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcprov-jdk15on</artifactId>
+    <version>1.70</version>
+</dependency>
 <!-- Google Cloud Translation -->
 <dependency>
     <groupId>com.google.cloud</groupId>
