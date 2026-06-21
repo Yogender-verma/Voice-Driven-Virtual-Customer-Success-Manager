@@ -132,6 +132,11 @@ public String complaintsPage(
         return "events";
     }
 
+    @GetMapping("/voice-cloning")
+public String voiceCloning() {
+    return "voice-cloning-ui";
+}
+
     @GetMapping("/analytics")
     public String analytics(Model model) {
 
