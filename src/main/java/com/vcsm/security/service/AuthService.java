@@ -28,7 +28,6 @@ public class AuthService {
         if (userRepository.existsByUsername(req.getUsername())) {
             throw new RuntimeException("Username already exists");
         }
-
         AppUser user = new AppUser();
         user.setUsername(req.getUsername());
         user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
@@ -36,12 +35,21 @@ public class AuthService {
         userRepository.save(user);
 
         String token = jwtService.generateToken(user);
-return new AuthResponse(token, user.getUsername(), "Bearer", /* role or expiry */);
+        // ✅ AuthResponse(token, refreshToken, email, role)
+        String role = user.getRoles().stream()
+            .findFirst()
+            .map(Enum::name)
+            .orElse("ROLE_RESIDENT");
+        return new AuthResponse(token, null, user.getUsername(), role);
     }
 
     public AuthResponse login(AppUser user) {
-       String token = jwtService.generateToken(user);
-return new AuthResponse(token, user.getUsername(), "Bearer", /* role or expiry */);
+        String token = jwtService.generateToken(user);
+        // ✅ AuthResponse(token, refreshToken, email, role)
+        String role = user.getRoles().stream()
+            .findFirst()
+            .map(Enum::name)
+            .orElse("UNKNOWN");
+        return new AuthResponse(token, null, user.getUsername(), role);
     }
 }
-
