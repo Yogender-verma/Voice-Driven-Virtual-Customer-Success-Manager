@@ -35,11 +35,13 @@ public class AuthService {
         user.setRoles(Set.of(UserRole.ROLE_RESIDENT));
         userRepository.save(user);
 
-        return new AuthResponse(jwtService.generateToken(user));
+        String token = jwtService.generateToken(user);
+return new AuthResponse(token, user.getUsername(), "Bearer", /* role or expiry */);
     }
 
     public AuthResponse login(AppUser user) {
-        return new AuthResponse(jwtService.generateToken(user));
+       String token = jwtService.generateToken(user);
+return new AuthResponse(token, user.getUsername(), "Bearer", /* role or expiry */);
     }
 }
 
