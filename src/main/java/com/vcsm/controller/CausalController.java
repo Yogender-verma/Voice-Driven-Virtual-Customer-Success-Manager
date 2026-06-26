@@ -1,6 +1,7 @@
 package com.vcsm.controller;
 
 import com.vcsm.ai.CausalEngine;
+import com.vcsm.ai.CausalGraphBuilder;
 import com.vcsm.ai.CounterfactualSimulator;
 import com.vcsm.ai.RootCauseAnalyzer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class CausalController {
     @Autowired
     private CounterfactualSimulator counterfactualSimulator;
 
+    @Autowired
+    private CausalGraphBuilder causalGraphBuilder;
+
     @GetMapping("/analyze")
     public ResponseEntity<CausalEngine.CausalAnalysis> analyze(@RequestParam String issue) {
         return ResponseEntity.ok(causalEngine.analyze(issue));
@@ -45,7 +49,7 @@ public class CausalController {
     @GetMapping("/graph")
     public ResponseEntity<Map<String, Object>> getCausalGraph() {
         Map<String, Object> response = new HashMap<>();
-        response.put("graph", new CausalGraphBuilder().getGraph());
+        response.put("graph", causalGraphBuilder.getGraph());
         response.put("status", "Causal graph available");
         return ResponseEntity.ok(response);
     }

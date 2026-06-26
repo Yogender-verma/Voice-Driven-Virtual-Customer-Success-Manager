@@ -42,13 +42,6 @@ public class RateLimiterService {
         long remaining = getRemainingTokens(userId);
         boolean canConsume = remaining > 0;
         return new RateLimitStatus(remaining, canConsume, DEFAULT_LIMIT);
-        Bucket bucket = getBucket(userId);
-
-        return new RateLimitStatus(
-                bucket.getAvailableTokens(),
-                true,
-                DEFAULT_LIMIT
-        );
     }
 
     public static class RateLimitStatus {

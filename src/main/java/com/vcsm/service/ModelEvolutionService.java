@@ -40,6 +40,13 @@ public class ModelEvolutionService {
         System.out.println("✅ Evolution cycle completed");
     }
 
+    /**
+     * Train model manually by name
+     */
+    public ModelVersion trainModel(String modelName) {
+        return autoTrainer.trainNewModel(modelName);
+    }
+
     private void retrainAllModels() {
         List<String> modelNames = getModelNames();
         for (String modelName : modelNames) {

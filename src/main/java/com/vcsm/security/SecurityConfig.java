@@ -36,6 +36,8 @@ public class SecurityConfig {
 
     @Autowired
     private HmacAuthenticationFilter hmacAuthenticationFilter;
+
+    @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
     @Bean
@@ -61,12 +63,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/voice/command").permitAll()
                         .requestMatchers("/api/voice/feedback/**").permitAll()
                         .requestMatchers("/api/chatbot/**").permitAll()
+                        .requestMatchers("/api/iot/alert").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
                         hmacAuthenticationFilter,
-                        JwtAuthFilter.class
+                        UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
                         jwtAuthFilter,
