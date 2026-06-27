@@ -23,6 +23,19 @@ public class GenAIController {
         return ResponseEntity.ok(result);
     }
 
+    @PostMapping("/summarize")
+    public ResponseEntity<GenAIResolver.CallSummaryResult> summarizeCallSession(@RequestBody Map<String, String> request) {
+        String transcript = request.get("transcript");
+        String residentEmail = request.get("residentEmail");
+        
+        if (transcript == null || transcript.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        GenAIResolver.CallSummaryResult result = genAIResolver.summarizeCallSession(transcript, residentEmail);
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> getStatus() {
         Map<String, Object> status = new HashMap<>();
