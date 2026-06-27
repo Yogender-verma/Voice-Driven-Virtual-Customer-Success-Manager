@@ -17,11 +17,13 @@ public class AuthService {
     private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final com.vcsm.repository.UserRepository profileUserRepository;
 
     public AuthService(AppUserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.profileUserRepository = profileUserRepository;
     }
 
     public AuthResponse signupResident(AuthRequest req) {
