@@ -176,6 +176,11 @@ public String translation() {
     return "translation-ui";
 }
 
+@GetMapping("/ivr-builder")
+public String ivrBuilder() {
+    return "ivr-builder";
+}
+
 
     @GetMapping("/analytics")
     public String analytics(Model model) {

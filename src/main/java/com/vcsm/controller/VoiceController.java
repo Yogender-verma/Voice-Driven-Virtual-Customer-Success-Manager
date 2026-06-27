@@ -5,6 +5,8 @@ import com.vcsm.service.HindiCommandMapper;
 import com.vcsm.model.VoiceCommand;
 import com.vcsm.service.OmnidimService;
 import com.vcsm.service.SentimentAnalysisService;
+import com.vcsm.service.IvrService;
+import com.vcsm.dto.IvrNode;
 import com.vcsm.model.User;
 import com.vcsm.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,9 @@ public class VoiceController {
 
     @Autowired
     private HindiCommandMapper hindiCommandMapper;
+
+    @Autowired
+    private IvrService ivrService;
 
     @PostMapping("/command")
     public ResponseEntity<Map<String, Object>> command(@RequestBody Map<String, String> body) {
@@ -81,10 +86,12 @@ public class VoiceController {
                 response.put("success", false);
             }
         } else {
-            // English command - use existing logic
-            Map<String, Object> englishResponse = omnidimService.processVoiceCommand(transcript);
-            response.putAll(englishResponse);
-            response.put("success", true);
+            // English command - route dynamically via active IVR JSON flow tree
+            Map<String, Object> ivrResponse = ivrService.processInteraction(user.getEmail(), transcript);
+            response.put("action", ivrResponse.get("action"));
+            response.put("response", ivrResponse.get("prompt"));
+            response.put("success", ivrResponse.get("success"));
+            response.put("currentNodeId", ivrResponse.get("currentNodeId"));
         }
         
         // Analyze sentiment dynamically from authenticated user
@@ -97,5 +104,20 @@ public class VoiceController {
     @GetMapping("/history")
     public ResponseEntity<List<VoiceCommand>> history() {
         return ResponseEntity.ok(omnidimService.getRecentCommands());
+    }
+
+    @GetMapping("/flow-config")
+    public ResponseEntity<IvrNode> getFlowConfig() {
+        return ResponseEntity.ok(ivrService.getActiveFlow());
+    }
+
+    @PostMapping("/flow-config")
+    public ResponseEntity<Map<String, Object>> saveFlowConfig(@RequestBody Map<String, String> body) {
+        String flowJson = body.get("flowJson");
+        if (flowJson == null || flowJson.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "flowJson is required", "success", false));
+        }
+        ivrService.saveFlow(flowJson);
+        return ResponseEntity.ok(Map.of("message", "IVR Flow Configuration updated successfully", "success", true));
     }
 }

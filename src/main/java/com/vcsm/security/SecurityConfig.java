@@ -65,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/refresh").permitAll()
                         .requestMatchers("/api/auth/admin/seed").permitAll()
                         .requestMatchers("/api/voice/command").permitAll()
+                        .requestMatchers("/api/voice/flow-config").permitAll()
                         .requestMatchers("/api/voice/feedback/**").permitAll()
                         .requestMatchers("/api/chatbot/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
