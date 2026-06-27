@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import jakarta.mail.internet.MimeMessage;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 public class EmailService {
+
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
     @Autowired
     private JavaMailSender mailSender;
@@ -69,7 +73,7 @@ public class EmailService {
             mailSender.send(mimeMessage);
             System.out.println("✅ Sent simple email to: " + toEmail);
         } catch (Exception e) {
-            System.err.println("❌ Failed to send simple email to " + toEmail + ": " + e.getMessage());
+            log.error("Failed to send simple email to {}: {}", toEmail, e.getMessage(), e);
         }
     }
 
@@ -121,11 +125,11 @@ public class EmailService {
 
             if (attempts >= 5) {
                 email.setStatus("FAILED");
-                System.err.println("❌ Permanently failed to send queued email to " + email.getRecipientEmail() + ": " + e.getMessage());
+                log.error("Permanently failed to send queued email to {}: {}", email.getRecipientEmail(), e.getMessage(), e);
             } else {
                 long backoffMinutes = (long) Math.pow(2, attempts);
                 email.setNextAttemptAt(LocalDateTime.now().plusMinutes(backoffMinutes));
-                System.out.println("⏳ Failed email to " + email.getRecipientEmail() + ". Scheduling retry in " + backoffMinutes + " mins. Attempt: " + attempts);
+                log.warn("Failed email to {}. Scheduling retry in {} mins. Attempt: {}", email.getRecipientEmail(), backoffMinutes, attempts, e);
             }
             emailQueueRepository.save(email);
         }

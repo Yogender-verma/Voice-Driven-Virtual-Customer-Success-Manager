@@ -1,6 +1,7 @@
 package com.vcsm.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +14,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotBlank
+    @Email
     @Column(unique = true, nullable = false)
     private String email;
     
+    @NotBlank
     @Column(nullable = false)
     private String name;
+    
+    @Size(min = 8, max = 100)
+    private String password;
     
     @Column(name = "preferred_language")
     private String preferredLanguage = "en";
@@ -29,6 +36,7 @@ public class User {
     private LocalDateTime createdAt;
     
     // Profile Fields
+    @Pattern(regexp = "\\+?[0-9]{10,15}")
     @Column(name = "phone")
     private String phone;
     

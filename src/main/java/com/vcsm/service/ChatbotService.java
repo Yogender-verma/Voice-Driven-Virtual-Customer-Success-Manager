@@ -6,11 +6,15 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.util.*;
 
 @Service
 public class ChatbotService {
+
+    private static final Logger log = LoggerFactory.getLogger(ChatbotService.class);
 
     private List<Map<String, Object>> faqs = new ArrayList<>();
     private Map<String, List<Integer>> keywordIndex = new HashMap<>();
@@ -46,7 +50,7 @@ public class ChatbotService {
             System.out.println("✅ Chatbot loaded with " + faqs.size() + " FAQs");
 
         } catch (Exception e) {
-            System.err.println("❌ Failed to load FAQs: " + e.getMessage());
+            log.error("Failed to load FAQs: {}", e.getMessage(), e);
         }
     }
 

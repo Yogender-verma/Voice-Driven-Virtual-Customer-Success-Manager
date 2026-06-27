@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +18,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 @Service
 public class WaitlistService {
+
+    private static final Logger log = LoggerFactory.getLogger(WaitlistService.class);
     
     @Autowired
     private EventWaitlistRepository waitlistRepository;
@@ -96,26 +100,9 @@ public class WaitlistService {
             Optional<EventWaitlist> firstWaitlist = waitlistRepository
                 .findFirstByEventAndConfirmedFalseAndNotifiedAtIsNullOrderByJoinedAtAsc(event);
             
-            if (firstWaitlist.isEmpty()) {
-                break;
-            }
-            
-            EventWaitlist waitlistEntry = firstWaitlist.get();
-            User user = waitlistEntry.getUser();
-            
-            // Notify the user
-            try {
-                emailService.sendEventSlotAvailable(event, user);
-                waitlistEntry.setNotifiedAt(LocalDateTime.now());
-                waitlistEntry.setExpiresAt(LocalDateTime.now().plusHours(24));
-                waitlistRepository.save(waitlistEntry);
-                
-                System.out.println("✅ Notification sent to user: " + user.getEmail());
-            } catch (Exception e) {
-                System.err.println("❌ Failed to send notification: " + e.getMessage());
-                // Break to avoid infinite looping on the same failing user in this loop execution
-                break;
-            }
+            System.out.println("✅ Notification sent to user: " + user.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send waitlist notification to user {}: {}", user.getEmail(), e.getMessage(), e);
         }
     }
     

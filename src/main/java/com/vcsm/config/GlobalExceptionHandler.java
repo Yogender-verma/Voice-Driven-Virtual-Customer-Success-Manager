@@ -14,11 +14,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // Resource Not Found (404)
     @ExceptionHandler({jakarta.persistence.EntityNotFoundException.class, 
@@ -156,9 +160,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleGenericException(
             Exception ex, HttpServletRequest request) {
         
-        // Log the error for debugging
-        System.err.println("ERROR: " + ex.getClass().getSimpleName() + " - " + ex.getMessage());
-        ex.printStackTrace();
+        log.error("Unhandled exception {} at {}: {}", ex.getClass().getSimpleName(), request.getRequestURI(), ex.getMessage(), ex);
         
         Map<String, Object> response = new HashMap<>();
         response.put("success", false);
