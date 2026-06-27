@@ -18,7 +18,7 @@ public class GenAIController {
     private GenAIResolver genAIResolver;
 
     @PostMapping("/resolve")
-    public ResponseEntity<GenAIResolver.ResolutionResult> resolveComplaint(@RequestBody Complaint complaint) {
+    public ResponseEntity<GenAIResolver.ResolutionResult> resolveComplaint(@Valid @RequestBody Complaint complaint) {
         GenAIResolver.ResolutionResult result = genAIResolver.resolveComplaint(complaint);
         return ResponseEntity.ok(result);
     }
