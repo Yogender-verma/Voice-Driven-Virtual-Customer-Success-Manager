@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -15,6 +17,8 @@ import java.util.Map;
 
 @Service
 public class VoiceTranslationService {
+
+    private static final Logger log = LoggerFactory.getLogger(VoiceTranslationService.class);
 
     @Autowired
     private LanguageDetector languageDetector;
@@ -87,7 +91,7 @@ public class VoiceTranslationService {
             return text;
             
         } catch (Exception e) {
-            // Fallback to mock translation
+            log.warn("Translation API call failed, using fallback: {}", e.getMessage(), e);
             return getFallbackTranslation(text, sourceLang, targetLang);
         }
     }

@@ -13,25 +13,15 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class PredictionService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private SentimentAnalysisRepository sentimentAnalysisRepository;
-
-    @Autowired
-    private ComplaintRepository complaintRepository;
-
-    @Autowired
-    @org.springframework.context.annotation.Lazy
-    private ProactiveOutreachService proactiveOutreachService;
+    private static final Logger log = LoggerFactory.getLogger(PredictionService.class);
 
     @Value("${ml.service.url:http://localhost:8000}")
     private String mlServiceUrl;
@@ -59,7 +49,7 @@ public class PredictionService {
             return objectMapper.readValue(response.getBody(), Map.class);
             
         } catch (Exception e) {
-            // Fallback: return mock prediction if ML service is down
+            log.warn("ML service unavailable for complaint prediction, using fallback: {}", e.getMessage(), e);
             return getFallbackPrediction(days);
         }
     }
@@ -84,6 +74,7 @@ public class PredictionService {
             return objectMapper.readValue(response.getBody(), Map.class);
             
         } catch (Exception e) {
+            log.warn("ML service unavailable for event attendance prediction, using fallback: {}", e.getMessage(), e);
             return getFallbackEventPrediction(eventId);
         }
     }
@@ -108,6 +99,7 @@ public class PredictionService {
             return objectMapper.readValue(response.getBody(), Map.class);
             
         } catch (Exception e) {
+            log.warn("ML service unavailable for sentiment prediction, using fallback: {}", e.getMessage(), e);
             return getFallbackSentimentPrediction();
         }
     }
@@ -121,6 +113,7 @@ public class PredictionService {
             return objectMapper.readValue(response.getBody(), Map.class);
             
         } catch (Exception e) {
+            log.warn("ML service unavailable for peak times prediction, using fallback: {}", e.getMessage(), e);
             return getFallbackPeakTimes();
         }
     }
