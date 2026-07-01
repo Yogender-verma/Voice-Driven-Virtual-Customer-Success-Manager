@@ -21,6 +21,8 @@ import com.vcsm.dto.ErrorResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import jakarta.validation.Valid;
+import com.vcsm.dto.VoiceCommandRequest;
 
 @RestController
 @RequestMapping("/api/voice")
@@ -45,8 +47,8 @@ public class VoiceController {
     private com.vcsm.service.EventRegistrationService eventRegistrationService;
 
     @PostMapping("/command")
-    public ResponseEntity<Map<String, Object>> command(@Valid @RequestBody Map<String, String> body) {
-        String transcript = body.get("transcript");
+    public ResponseEntity<Map<String, Object>> command(@Valid @RequestBody VoiceCommandRequest request) {
+        String transcript = request.getTranscript();
         
         if (transcript == null || transcript.isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Transcript required", "success", false));
