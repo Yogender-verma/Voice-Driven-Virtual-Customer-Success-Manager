@@ -3,6 +3,37 @@ let recognition = null;
 let isRecording = false;
 let lastCommandId = null; // Store last command ID for feedback
 
+const STORAGE_KEY = "voiceConversationHistory";
+
+let conversationHistory =
+    JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+    function saveConversation() {
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(conversationHistory)
+    );
+}
+
+function renderConversation() {
+    const container = document.getElementById("conversationHistory");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    conversationHistory.forEach(item => {
+        container.innerHTML += `
+            <div class="card mb-2">
+                <div class="card-body py-2">
+                    <strong>You:</strong> ${item.user}<br>
+                    <strong>Assistant:</strong> ${item.bot}
+                </div>
+            </div>
+        `;
+    });
+}
+
 function startVoice() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         alert('Voice recognition not supported in this browser. Please use Chrome.');
@@ -76,6 +107,13 @@ async function sendCommand() {
         const responseDiv = document.getElementById('voiceResponse');
         const responseText = document.getElementById('responseText');
         responseText.textContent = data.response || 'Command processed successfully!';
+        conversationHistory.push({
+    user: transcript,
+    bot: data.response || 'Command processed successfully!'
+});
+
+saveConversation();
+renderConversation();
         responseDiv.classList.remove('d-none');
         
         // Handle offline local navigation matching
@@ -256,6 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') sendCommand();
         });
     }
+    renderConversation();
 });
 
 // ===== QUICK COMPLAINT (Dashboard) =====
@@ -396,7 +435,7 @@ async function registerEvent(id) {
 
 }
 
-}
+
 
 // ===== BULK OPERATIONS =====
 let selectedIds = [];
@@ -522,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-});
+
 
 // ===== WEBSOCKET NOTIFICATIONS =====
 let stompClient = null;
@@ -689,6 +728,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-});
+
 
 
